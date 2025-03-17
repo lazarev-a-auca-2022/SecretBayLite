@@ -7,29 +7,44 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     xz-utils \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Flutter
-RUN git clone https://github.com/flutter/flutter.git /flutter
-ENV PATH="/flutter/bin:${PATH}"
-RUN flutter doctor
-RUN flutter config --enable-web
+# Create a non-root user
+RUN useradd -ms /bin/bash developer
+USER developer
+WORKDIR /home/developer
 
-# Copy the app files
-WORKDIR /app
-COPY . .
+# Download and setup Flutter
+RUN wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.9-stable.tar.xz \
+    && tar xf flutter_linux_3.16.9-stable.tar.xz \
+    && rm flutter_linux_3.16.9-stable.tar.xz
 
-# Get app dependencies
-RUN flutter pub get
+ENV PATH="/home/developer/flutter/bin:${PATH}"
 
-# Build for web
-RUN flutter build web --release
+# Configure Git for the Flutter installation
+RUN git config --global --add safe.directory /home/developer/flutter
+
+# Pre-download development binaries and precache Flutter
+RUN flutter precache && \
+    flutter doctor && \
+    flutter config --enable-web
+
+# Create and set the app directory
+WORKDIR /home/developer/app
+
+# Copy the app files with correct ownership
+COPY --chown=developer:developer . .
+
+# Get app dependencies and build
+RUN flutter pub get && \
+    flutter build web --release
 
 # Stage 2: Serve the app using nginx
 FROM nginx:alpine
 
 # Copy the built app
-COPY --from=builder /app/build/web /usr/share/nginx/html
+COPY --from=builder /home/developer/app/build/web /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
