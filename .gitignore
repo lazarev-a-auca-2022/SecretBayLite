@@ -1,0 +1,37 @@
+# Go backend
+backend/logs/
+*.log
+*.out
+*.exe
+*.test
+*.prof
+
+# Flutter frontend
+frontend/.dart_tool/
+frontend/build/
+frontend/.packages
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.pub-cache/
+frontend/.pub/
+frontend/.dart_tool/
+frontend/.idea/
+frontend/.vscode/
+frontend/*.iml
+frontend/ios/Flutter/.last_build_id
+frontend/ios/Pods/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
