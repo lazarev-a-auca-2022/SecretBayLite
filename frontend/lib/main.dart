@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/home_screen.dart';
-import 'services/auth_service.dart';
-import 'services/vpn_service.dart';
+import 'package:secretbay/screens/home_screen.dart';
+import 'package:secretbay/services/auth_service.dart';
+import 'package:secretbay/services/vpn_service.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -16,20 +17,15 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
-        Provider(create: (_) => VPNService()),
+        ChangeNotifierProvider(create: (_) => VPNService()),
       ],
       child: MaterialApp(
         title: 'SecretBay',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
-          brightness: Brightness.light,
-          useMaterial3: true,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          useMaterial3: true,
-        ),
-        themeMode: ThemeMode.system,
         home: const HomeScreen(),
       ),
     );

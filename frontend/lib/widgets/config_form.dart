@@ -12,16 +12,16 @@ class ConfigForm extends StatefulWidget {
 
 class _ConfigFormState extends State<ConfigForm> {
   final _formKey = GlobalKey<FormState>();
-  final _serverIPController = TextEditingController();
+  final _serverIpController = TextEditingController();
   final _usernameController = TextEditingController();
   final _authCredentialController = TextEditingController();
-  String _selectedAuthMethod = 'password';
-  String _selectedVPNType = 'openvpn';
+  String _authMethod = 'password';
+  String _vpnType = 'openvpn';
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _serverIPController.dispose();
+    _serverIpController.dispose();
     _usernameController.dispose();
     _authCredentialController.dispose();
     super.dispose();
@@ -46,11 +46,11 @@ class _ConfigFormState extends State<ConfigForm> {
     try {
       final vpnService = context.read<VPNService>();
       final result = await vpnService.configureVPN(
-        serverIP: _serverIPController.text,
+        serverIP: _serverIpController.text,
         username: _usernameController.text,
-        authMethod: _selectedAuthMethod,
+        authMethod: _authMethod,
         authCredential: _authCredentialController.text,
-        vpnType: _selectedVPNType,
+        vpnType: _vpnType,
       );
 
       if (mounted) {
@@ -108,7 +108,7 @@ class _ConfigFormState extends State<ConfigForm> {
       child: ListView(
         children: [
           TextFormField(
-            controller: _serverIPController,
+            controller: _serverIpController,
             decoration: const InputDecoration(
               labelText: 'Server IP',
               hintText: 'Enter server IP address',
@@ -136,7 +136,7 @@ class _ConfigFormState extends State<ConfigForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedAuthMethod,
+            value: _authMethod,
             decoration: const InputDecoration(
               labelText: 'Authentication Method',
             ),
@@ -146,13 +146,13 @@ class _ConfigFormState extends State<ConfigForm> {
             ],
             onChanged: (value) {
               setState(() {
-                _selectedAuthMethod = value!;
+                _authMethod = value!;
                 _authCredentialController.clear();
               });
             },
           ),
           const SizedBox(height: 16),
-          if (_selectedAuthMethod == 'password')
+          if (_authMethod == 'password')
             TextFormField(
               controller: _authCredentialController,
               decoration: const InputDecoration(
@@ -194,7 +194,7 @@ class _ConfigFormState extends State<ConfigForm> {
             ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _selectedVPNType,
+            value: _vpnType,
             decoration: const InputDecoration(
               labelText: 'VPN Type',
             ),
@@ -203,7 +203,7 @@ class _ConfigFormState extends State<ConfigForm> {
               DropdownMenuItem(value: 'ios', child: Text('IKEv2 (iOS)')),
             ],
             onChanged: (value) {
-              setState(() => _selectedVPNType = value!);
+              setState(() => _vpnType = value!);
             },
           ),
           const SizedBox(height: 24),
