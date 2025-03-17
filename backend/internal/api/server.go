@@ -33,16 +33,35 @@ func NewServer(cfg *config.Config, logger *log.Logger) *Server {
 	}
 }
 
+// corsMiddleware handles CORS headers
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // Router returns the configured HTTP router
 func (s *Server) Router() *mux.Router {
 	r := mux.NewRouter()
+
+	// Apply CORS middleware to all routes
+	r.Use(corsMiddleware)
 
 	// API routes
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(s.authMiddleware)
 
-	api.HandleFunc("/vpn/configure", s.handleVPNConfiguration).Methods(http.MethodPost)
-	api.HandleFunc("/health", s.handleHealthCheck).Methods(http.MethodGet)
+	api.HandleFunc("/vpn/configure", s.handleVPNConfiguration).Methods(http.MethodPost, http.MethodOptions)
+	api.HandleFunc("/health", s.handleHealthCheck).Methods(http.MethodGet, http.MethodOptions)
 
 	return r
 }

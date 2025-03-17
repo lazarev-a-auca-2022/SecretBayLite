@@ -3,14 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class VPNService extends ChangeNotifier {
-  static const String _baseUrl = 'http://localhost:8080/api';
+  static const String _baseUrl = 'https://localhost:8080/api';  // Changed to HTTPS
   bool _isConfiguring = false;
   String? _error;
 
   bool get isConfiguring => _isConfiguring;
   String? get error => _error;
 
-  Future<void> configureVPN({
+  Future<Map<String, dynamic>> configureVPN({
     required String serverIp,
     required String username,
     required String authMethod,
@@ -39,6 +39,7 @@ class VPNService extends ChangeNotifier {
       if (response.statusCode == 200) {
         _isConfiguring = false;
         notifyListeners();
+        return jsonDecode(response.body);
       } else {
         throw Exception('Failed to configure VPN: ${response.body}');
       }
@@ -46,6 +47,7 @@ class VPNService extends ChangeNotifier {
       _error = e.toString();
       _isConfiguring = false;
       notifyListeners();
+      rethrow;
     }
   }
 

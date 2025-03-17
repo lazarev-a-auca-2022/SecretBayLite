@@ -38,7 +38,7 @@ COPY --chown=developer:developer . .
 
 # Get app dependencies and build
 RUN flutter pub get && \
-    flutter build web --release
+    flutter build web --release --web-renderer html
 
 # Stage 2: Serve the app using nginx
 FROM nginx:alpine

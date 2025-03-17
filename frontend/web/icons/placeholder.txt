@@ -1,0 +1,5 @@
+This directory will contain the following icon files:
+- Icon-192.png
+- Icon-512.png
+
+These files will be generated during the Flutter web build process.
