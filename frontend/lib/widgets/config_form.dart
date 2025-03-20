@@ -102,85 +102,85 @@ class _ConfigFormState extends State<ConfigForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Container(
-        // Add height constraint to make the form visible
-        constraints: BoxConstraints(minHeight: 450),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextFormField(
-              controller: _serverIpController,
-              decoration: const InputDecoration(
-                labelText: 'Server IP',
-                hintText: 'Enter server IP address',
-              ),
-              validator: (value) {
-                if (value?.isEmpty ?? true) {
-                  return 'Please enter server IP';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                hintText: 'Enter username',
-              ),
-              validator: (value) {
-                if (value?.isEmpty ?? true) {
-                  return 'Please enter username';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value: _authMethod,
-              decoration: const InputDecoration(
-                labelText: 'Authentication Method',
-              ),
-              items: const [
-                DropdownMenuItem(value: 'password', child: Text('Password')),
-                DropdownMenuItem(value: 'key', child: Text('SSH Key')),
-              ],
-              onChanged: (value) {
-                setState(() {
-                  _authMethod = value!;
-                  _authCredentialController.clear();
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            if (_authMethod == 'password')
-              TextFormField(
-                controller: _authCredentialController,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter password',
+    return Center(
+      child: SingleChildScrollView(
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: 400,
+            minHeight: 450,
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _serverIpController,
+                  decoration: const InputDecoration(
+                    labelText: 'Server IP',
+                    hintText: 'Enter server IP address',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter server IP';
+                    }
+                    return null;
+                  },
                 ),
-                obscureText: true,
-                validator: (value) {
-                  if (value?.isEmpty ?? true) {
-                    return 'Please enter password';
-                  }
-                  return null;
-                },
-              )
-            else
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _authCredentialController,
-                      decoration: const InputDecoration(
-                        labelText: 'SSH Key File',
-                        hintText: 'Select SSH key file',
-                      ),
-                      readOnly: true,
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'Enter username',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter username';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _authMethod,
+                  decoration: const InputDecoration(
+                    labelText: 'Authentication Method',
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'password', child: Text('Password')),
+                    DropdownMenuItem(value: 'key', child: Text('SSH Key')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _authMethod = value!;
+                      _authCredentialController.clear();
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                if (_authMethod == 'password')
+                  TextFormField(
+                    controller: _authCredentialController,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      hintText: 'Enter password',
+                    ),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Please enter password';
+                      }
+                      return null;
+                    },
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _authCredentialController,
                       validator: (value) {
                         if (value?.isEmpty ?? true) {
                           return 'Please select SSH key file';

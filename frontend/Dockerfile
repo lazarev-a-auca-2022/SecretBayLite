@@ -44,11 +44,19 @@ RUN flutter pub get && \
 FROM nginx:alpine
 
 # Copy the built app
-COPY --from=builder /home/developer/app/build/web /usr/share/nginx/html
+COPY --from=builder /home/developer/app/build/web /usr/share/nginx/html/
+
+# Create required directories with proper permissions
+RUN mkdir -p /etc/nginx/conf.d && \
+    mkdir -p /etc/letsencrypt && \
+    mkdir -p /var/www/certbot && \
+    chown -R nginx:nginx /etc/nginx/conf.d && \
+    chown -R nginx:nginx /var/www/certbot
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN chmod 644 /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]

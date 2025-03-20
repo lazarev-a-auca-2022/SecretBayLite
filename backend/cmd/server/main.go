@@ -36,14 +36,26 @@ func main() {
 		WriteTimeout: 120 * time.Second, // As per requirements: 120 seconds max processing time
 	}
 
-	// SSL certificate paths
-	certFile := filepath.Join("/etc/letsencrypt/live/localhost/fullchain.pem")
-	keyFile := filepath.Join("/etc/letsencrypt/live/localhost/privkey.pem")
-
 	// Start server in a goroutine
 	go func() {
-		logger.Printf("Starting HTTPS server on %s", cfg.ServerAddress)
-		if err := httpServer.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
+		// SSL certificate paths
+		certFile := filepath.Join("/etc/letsencrypt/live/localhost/fullchain.pem")
+		keyFile := filepath.Join("/etc/letsencrypt/live/localhost/privkey.pem")
+
+		// Try to start with HTTPS
+		if _, err := os.Stat(certFile); err == nil {
+			if _, err := os.Stat(keyFile); err == nil {
+				logger.Printf("Starting HTTPS server on %s", cfg.ServerAddress)
+				if err := httpServer.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
+					logger.Printf("HTTPS server failed: %v, falling back to HTTP", err)
+				}
+				return
+			}
+		}
+
+		// Fall back to HTTP if certificates are not available
+		logger.Printf("Starting HTTP server on %s", cfg.ServerAddress)
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatalf("Failed to start server: %v", err)
 		}
 	}()

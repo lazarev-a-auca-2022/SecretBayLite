@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class VPNService extends ChangeNotifier {
-  static const String _baseUrl = 'https://localhost:8080/api';  // Changed to HTTPS
+  // Updated _baseUrl to use current origin and avoid CORS issues.
+  static final String _baseUrl = '${Uri.base.origin}/api';
   bool _isConfiguring = false;
   String? _error;
 

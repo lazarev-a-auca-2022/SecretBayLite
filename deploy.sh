@@ -27,25 +27,25 @@ mkdir -p certbot/conf
 chmod 755 logs
 chmod -R 755 certbot
 
-# Build and start the containers
-echo "Building and starting containers..."
-docker-compose up --build -d
+# Start frontend first in HTTP mode for certificate generation
+echo "Starting frontend service for certificate generation..."
+docker-compose up -d frontend
 
-# Wait for services to start
-echo "Waiting for services to start..."
+# Wait for frontend to be ready
+echo "Waiting for frontend to start..."
 sleep 10
 
-# Initialize SSL certificates
-echo "Initializing SSL certificates..."
-# Remove --staging flag after testing
+# Generate SSL certificates
+echo "Generating SSL certificates..."
 docker-compose run --rm certbot certonly --webroot --webroot-path=/var/www/certbot \
     --email admin@example.com --agree-tos --no-eff-email -d localhost --staging --force-renewal
 
-# Reload nginx to apply new certificates
-docker-compose exec frontend nginx -s reload
+# Now start all services
+echo "Starting all services..."
+docker-compose up -d --force-recreate
 
 # Set up automatic certificate renewal
-echo "0 */12 * * * docker-compose -f $(pwd)/docker-compose.yml run --rm certbot renew" | sudo crontab -
+echo "0 */12 * * * cd $(pwd) && docker-compose run --rm certbot renew && docker-compose exec frontend nginx -s reload" | sudo crontab -
 
 # Check if services are running
 if docker-compose ps | grep -q "Up"; then
