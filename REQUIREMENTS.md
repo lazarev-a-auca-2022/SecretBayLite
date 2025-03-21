@@ -1,3 +1,8 @@
+# SecretBay Lite - Cross Platform VPN Configuration Tool
+
+## Overview
+SecretBay Lite is a Flutter-based desktop/mobile application that configures VPN servers remotely.
+
 Project: Server Application for Automatic Configuration of Remote VPN Servers
 Name: SecretBay
 Objective: Create a server application that:
@@ -7,6 +12,33 @@ Objective: Create a server application that:
     Ensures the security of the remote server configuration.
     Returns a ready VPN configuration to the client for OpenVPN and iOS VPN.
     Deletes all client data after completing the configuration (including changing the password).
+
+## Architecture Changes
+
+### Client Application (Flutter)
+- Cross-platform application supporting iOS, Android, and Desktop
+- Material Design UI for consistent experience
+- Local storage for saved configurations
+- Direct SSH connection to remote servers
+- Progress indication during setup
+- Configuration file management
+
+### Core Service (Go)
+- Embedded Go binary for VPN configuration logic
+- Platform-specific builds via gomobile
+- Direct SSH communication
+- VPN setup automation
+- Configuration generation
+
+### Security
+- Local credential storage using platform secure storage
+- SSH key management
+- No server component needed
+
+### Deployment
+- Distributed as platform-specific packages
+- Self-contained application
+- No external server dependencies
 
 1. Functional Requirements
 
